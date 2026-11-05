@@ -2,8 +2,13 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pokemon Premium Gallery</title>
+<script>
+(function () { var off = false;
+  try { var v = localStorage.getItem('fx'); off = v ? v === 'off' : matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  if (off) document.documentElement.classList.add('no-fx'); })();
+</script>
 <style>
 @property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 
@@ -23,7 +28,8 @@ body {
     background-attachment: fixed; background-size: 400% 400%;
     animation: gradientBG 18s ease infinite;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh; overflow-x: hidden; color: var(--text-color);
+    min-height: 100vh; min-height: 100dvh; overflow-x: hidden; color: var(--text-color);
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
 @keyframes gradientBG { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 
@@ -75,7 +81,7 @@ body {
     60% { filter: blur(0); }
 }
 .glass-card.tilting { transition: transform .08s linear, box-shadow .3s; }
-.glass-card:hover { --s: 1.07; box-shadow: 0 18px 40px rgba(31,38,135,.35); z-index: 10; }
+@media (hover: hover) { .glass-card:hover { --s: 1.07; box-shadow: 0 18px 40px rgba(31,38,135,.35); z-index: 10; } }
 .glass-card:active { --s: .96; }
 /* kilau mengikuti kursor */
 .glass-card::after {
@@ -245,6 +251,66 @@ body {
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+.edit-actions .delete-btn { margin-top: 0; }
+
+/* ===== Tombol Effect ON / OFF (kiri atas) ===== */
+#fxToggle { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); left: 12px; z-index: 1100; height: 32px;
+    display: flex; align-items: center; gap: 2px; padding: 3px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+#fxToggle .fx-title { padding: 0 6px 0 9px; opacity: .75; }
+#fxToggle .fx-title .s { display: none; }
+#fxToggle button { border: 0; height: 100%; padding: 0 10px; border-radius: 16px; background: transparent; color: var(--text-color); font: inherit; cursor: pointer; }
+#fxToggle button.active { background: #4a90e2; color: #fff; }
+#fxToggle button[data-fx="off"].active { background: #666; }
+
+/* ===== Mode Effect OFF: matikan semua animasi & efek berat ===== */
+html.no-fx *, html.no-fx *::before, html.no-fx *::after {
+    animation: none !important; transition: none !important;
+    backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+}
+html.no-fx body { background: linear-gradient(135deg, #d7e8ff, #f0e6ff, #ffe6f0); background-attachment: scroll; background-size: 100% 100%; }
+html.no-fx .blob, html.no-fx #fx, html.no-fx .sweep, html.no-fx .star,
+html.no-fx .glass-card::after, html.no-fx .glass-card.shiny::before { display: none !important; }
+html.no-fx .glass-card { transform: none !important; background: rgba(255,255,255,.4); box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+html.no-fx .glass-card:hover { outline: 2px solid rgba(74,144,226,.7); outline-offset: -2px; }
+html.no-fx .glass-card.shiny { box-shadow: 0 0 0 2px rgba(255,200,0,.9); }
+html.no-fx .glass-card img, html.no-fx .glass-card:hover img { filter: none; }
+html.no-fx #fxToggle, html.no-fx #searchInput, html.no-fx .bulk-upload-btn { background: rgba(255,255,255,.7); box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+html.no-fx .bulk-upload-btn::before { display: none; }
+html.no-fx .modal, html.no-fx #progressModal { background: rgba(0,0,0,.65); }
+html.no-fx .modal-content, html.no-fx #contextMenu { background: rgba(255,255,255,.97); }
+html.no-fx #lightbox.active { background: rgba(0,0,0,.92); }
+
+/* ===== Responsif ===== */
+@media (max-width: 1100px) { .container { grid-template-columns: repeat(6, 1fr); } }
+@media (max-width: 900px) { .container { grid-template-columns: repeat(5, 1fr); } }
+@media (max-width: 700px) { .container { grid-template-columns: repeat(4, 1fr); }
+    .blob { filter: blur(50px); } .blob-1 { width: 260px; height: 260px; } .blob-2 { width: 300px; height: 300px; } .blob-3 { width: 220px; height: 220px; }
+    #lbWrapper { padding: 56px 8px 72px; gap: 0; }
+    #lightboxImg { max-width: 100%; max-height: calc(100dvh - 140px); object-fit: contain; }
+    .lb-nav-btn { position: absolute; top: 50%; translate: 0 -50%; width: 40px; height: 40px; font-size: 18px; background: rgba(0,0,0,.35); }
+    #lbWrapper .lb-nav-btn:first-child { left: 8px; } #lbWrapper .lb-nav-btn:last-child { right: 8px; }
+    .lb-nav-close { top: calc(10px + env(safe-area-inset-top, 0px)); right: 10px; width: 42px; height: 42px; font-size: 24px; }
+    #lbCaption { bottom: calc(20px + env(safe-area-inset-bottom, 0px)); max-width: 90%; white-space: normal; text-align: center; font-size: 14px; }
+}
+@media (max-width: 600px) {
+    #fxToggle { top: calc(13px + env(safe-area-inset-top, 0px)); left: 8px; height: 30px; font-size: 11px; }
+    #fxToggle .fx-title { padding: 0 2px 0 6px; } #fxToggle .fx-title .l { display: none; } #fxToggle .fx-title .s { display: inline; }
+    #fxToggle button { padding: 0 8px; }
+    #searchContainer { padding: calc(10px + env(safe-area-inset-top, 0px)) 44px 10px 98px; }
+    #searchInput, #searchInput:focus { width: 100%; height: 36px; font-size: 16px; }
+    #adminTrigger { width: 40px; height: 40px; }
+    .container { grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 8px 8px 90px; }
+    .glass-card { border-radius: 10px; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    .shiny-badge { top: 5px; left: 5px; font-size: 7px; padding: 1px 4px; }
+    .bulk-upload-btn { width: 52px; height: 52px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+    .modal-content { padding: 22px 16px; max-height: 92vh; max-height: 92dvh; overflow-y: auto; }
+    .edit-actions .action-btn { font-size: 13px; padding: 12px 6px; }
+    .preview-container { touch-action: none; }
+}
+@media (max-width: 340px) { .container { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
 <body>
@@ -252,6 +318,11 @@ body {
 <div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>
 <canvas id="fx"></canvas>
 <div id="adminTrigger"></div>
+<div id="fxToggle" role="group" aria-label="Efek visual">
+    <span class="fx-title"><span class="l">Effect</span><span class="s">✨</span></span>
+    <button type="button" data-fx="on">ON</button>
+    <button type="button" data-fx="off">OFF</button>
+</div>
 
 <div id="searchContainer"><input type="text" id="searchInput" placeholder=""></div>
 <div class="container" id="galleryContainer"></div>
@@ -350,7 +421,8 @@ let isAdmin = false, imagesData = [], currentEditIndex = -1, currentFilteredIndi
 let currentImgScale = 1, currentImgPctX = 0, currentImgPctY = 0;
 let isDragging = false, startX, startY, initialPctX, initialPctY, currentAspect = 1;
 
-const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const root = document.documentElement;
+const noFx = () => root.classList.contains('no-fx');
 const currentSearch = () => document.getElementById('searchInput').value;
 
 function formatName(filename) {
@@ -402,7 +474,7 @@ function renderGrid(searchTerm = '') {
 
         // Tilt 3D + kilau mengikuti kursor
         card.addEventListener('mousemove', (e) => {
-            if (card.classList.contains('dragging')) return;
+            if (noFx() || card.classList.contains('dragging')) return;
             const r = card.getBoundingClientRect();
             const x = e.clientX - r.left, y = e.clientY - r.top;
             card.classList.add('tilting');
@@ -446,13 +518,15 @@ document.getElementById('searchInput').addEventListener('input', (e) => renderGr
 /* ---------- Context menu ---------- */
 function openMenu(x, y) {
     const m = document.getElementById('contextMenu');
-    m.style.display = 'block'; m.style.left = x + 'px'; m.style.top = y + 'px';
+    m.style.display = 'block';
+    x = Math.max(8, Math.min(x, scrollX + innerWidth - m.offsetWidth - 8));
+    y = Math.max(8, Math.min(y, scrollY + innerHeight - m.offsetHeight - 8));
+    m.style.left = x + 'px'; m.style.top = y + 'px';
     m.classList.remove('open'); void m.offsetWidth; m.classList.add('open');
 }
 function closeContextMenu() { document.getElementById('contextMenu').style.display = 'none'; }
 
-document.getElementById('adminTrigger').addEventListener('contextmenu', (e) => {
-    e.preventDefault();
+function showAdminMenu(px, py) {
     const ctxMenu = document.getElementById('contextMenu');
     ctxMenu.innerHTML = '';
     if (!isAdmin) {
@@ -468,8 +542,16 @@ document.getElementById('adminTrigger').addEventListener('contextmenu', (e) => {
         itemDeleteAll.onclick = () => { triggerDeleteAll(); closeContextMenu(); };
         ctxMenu.appendChild(itemDeleteAll);
     }
-    openMenu(e.pageX - 100, e.pageY);
-});
+    openMenu(px - 100, py);
+}
+let ignoreClickUntil = 0;
+(function () {
+    const t = document.getElementById('adminTrigger'); let timer;
+    t.addEventListener('contextmenu', (e) => { e.preventDefault(); showAdminMenu(e.pageX, e.pageY); });
+    // HP: tekan lama 0,6 detik di pojok kanan atas = klik kanan
+    t.addEventListener('touchstart', (e) => { const p = e.touches[0]; timer = setTimeout(() => { ignoreClickUntil = Date.now() + 600; showAdminMenu(p.pageX, p.pageY); }, 600); }, { passive: true });
+    ['touchend', 'touchmove', 'touchcancel'].forEach(n => t.addEventListener(n, () => clearTimeout(timer), { passive: true }));
+})();
 
 /* ---------- Hapus ---------- */
 let deleteTimer;
@@ -489,7 +571,7 @@ function triggerDeleteAll() {
         closeModal('deleteAllModal');
         const cards = [...document.querySelectorAll('.glass-card')];
         cards.forEach((c, i) => { c.style.animationDelay = `${Math.min(i * 0.02, 0.5)}s`; c.classList.add('removing'); });
-        await new Promise(r => setTimeout(r, cards.length ? 450 + Math.min(cards.length * 20, 500) : 0));
+        await new Promise(r => setTimeout(r, noFx() || !cards.length ? 0 : 450 + Math.min(cards.length * 20, 500)));
         imagesData = [];
         await saveImagesToDB(imagesData);
         renderGrid();
@@ -504,13 +586,13 @@ function showDeleteMenu(x, y, index) {
     item.onclick = async () => {
         closeContextMenu();
         const card = document.querySelector(`.glass-card[data-i="${index}"]`);
-        if (card) { card.style.animationDelay = '0s'; card.classList.add('removing'); await new Promise(r => setTimeout(r, 430)); }
+        if (card) { card.style.animationDelay = '0s'; card.classList.add('removing'); await new Promise(r => setTimeout(r, noFx() ? 0 : 430)); }
         imagesData.splice(index, 1); await saveImagesToDB(imagesData);
         renderGrid(currentSearch());
     };
     ctxMenu.appendChild(item); openMenu(x, y);
 }
-document.addEventListener('click', closeContextMenu);
+document.addEventListener('click', () => { if (Date.now() > ignoreClickUntil) closeContextMenu(); });
 
 /* ---------- Modal ---------- */
 function openModal(id) {
@@ -555,6 +637,7 @@ function resizeImageForDB(file) {
     });
 }
 
+if (matchMedia('(pointer: coarse)').matches) { const fi = document.getElementById('folderInput'); fi.removeAttribute('webkitdirectory'); fi.removeAttribute('directory'); fi.accept = 'image/*'; }
 document.getElementById('folderInput').addEventListener('change', async function (e) {
     const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
     if (files.length === 0) return;
@@ -598,13 +681,17 @@ const previewContainer = document.getElementById('previewContainer');
 function startPan(x, y) { isDragging = true; startX = x; startY = y; initialPctX = currentImgPctX; initialPctY = currentImgPctY; }
 function doPan(x, y) {
     if (!isDragging) return;
-    currentImgPctX = initialPctX + ((x - startX) / 200) * 100;
-    currentImgPctY = initialPctY + ((y - startY) / 200) * 100;
+    const sz = previewContainer.clientWidth || 200;
+    currentImgPctX = initialPctX + ((x - startX) / sz) * 100;
+    currentImgPctY = initialPctY + ((y - startY) / sz) * 100;
     updatePreviewImg();
 }
 previewContainer.addEventListener('mousedown', (e) => startPan(e.clientX, e.clientY));
 window.addEventListener('mousemove', (e) => doPan(e.clientX, e.clientY));
 window.addEventListener('mouseup', () => { isDragging = false; });
+previewContainer.addEventListener('touchstart', (e) => { const t = e.touches[0]; startPan(t.clientX, t.clientY); }, { passive: true });
+previewContainer.addEventListener('touchmove', (e) => { const t = e.touches[0]; doPan(t.clientX, t.clientY); e.preventDefault(); }, { passive: false });
+window.addEventListener('touchend', () => { isDragging = false; });
 document.getElementById('zoomSlider').addEventListener('input', (e) => { currentImgScale = parseFloat(e.target.value); updatePreviewImg(); });
 
 async function saveEdit() {
@@ -642,7 +729,7 @@ function openLightbox(globalIndex, cardEl) {
     lb.style.display = 'flex';
     requestAnimationFrame(() => {
         lb.classList.add('active');
-        if (reduceMotion) return;
+        if (noFx()) return;
         const t = el.getBoundingClientRect();
         if (cardEl && t.width) {
             // zoom terbang dari posisi kartu ke tengah layar
@@ -663,14 +750,15 @@ function closeLightbox() {
     lbClosing = true;
     lb.classList.remove('active');
     const el = lbImg();
-    if (!reduceMotion) el.animate([{ transform: 'none', opacity: 1 }, { transform: 'scale(.6) rotate(6deg)', opacity: 0 }],
+    if (!noFx()) el.animate([{ transform: 'none', opacity: 1 }, { transform: 'scale(.6) rotate(6deg)', opacity: 0 }],
         { duration: 350, easing: 'ease-in', fill: 'forwards' });
-    setTimeout(() => { lb.style.display = 'none'; el.getAnimations().forEach(a => a.cancel()); lbClosing = false; }, 400);
+    setTimeout(() => { lb.style.display = 'none'; el.getAnimations().forEach(a => a.cancel()); lbClosing = false; }, noFx() ? 0 : 400);
 }
 
 function navigateLightbox(dir, e) {
     if (e) e.stopPropagation();
     if (lbBusy || !currentFilteredIndices.length) return;
+    if (noFx()) { currentLightboxIndex = (currentLightboxIndex + dir + currentFilteredIndices.length) % currentFilteredIndices.length; updateLightboxImage(); return; }
     lbBusy = true;
     const el = lbImg();
     const out = el.animate([
@@ -700,25 +788,39 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-/* ---------- Partikel latar (bokeh melayang) ---------- */
+/* ---------- Swipe di lightbox (HP) ---------- */
 (function () {
-    if (reduceMotion) return;
+    const lb = document.getElementById('lightbox'); let sx = 0, sy = 0;
+    lb.addEventListener('touchstart', (e) => { sx = e.changedTouches[0].clientX; sy = e.changedTouches[0].clientY; }, { passive: true });
+    lb.addEventListener('touchend', (e) => {
+        if (!lb.classList.contains('active')) return;
+        const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) navigateLightbox(dx < 0 ? 1 : -1);
+    }, { passive: true });
+})();
+
+/* ---------- Partikel latar (bisa dihentikan) ---------- */
+const Particles = (function () {
     const cv = document.getElementById('fx'), cx = cv.getContext('2d');
-    let W, H, ps = [], mouse = { x: -999, y: -999 };
     const colors = ['255,255,255', '120,170,255', '255,150,190', '150,240,210'];
+    const count = matchMedia('(max-width: 600px)').matches ? 18 : 45;
+    let W = 0, H = 0, ps = [], raf = 0, running = false, mouse = { x: -999, y: -999 };
     function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
-    resize(); addEventListener('resize', resize);
+    addEventListener('resize', () => { if (running) resize(); });
     addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
-    for (let i = 0; i < 45; i++) ps.push({
-        x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: 2 + Math.random() * 6,
-        vy: -(0.15 + Math.random() * 0.5), vx: 0, sway: Math.random() * 6.28, c: colors[i % colors.length], a: 0.25 + Math.random() * 0.4
-    });
-    (function loop(t) {
+    function init() {
+        for (let i = 0; i < count; i++) ps.push({
+            x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: 2 + Math.random() * 6,
+            vy: -(0.15 + Math.random() * 0.5), vx: 0, sway: Math.random() * 6.28, c: colors[i % colors.length], a: 0.25 + Math.random() * 0.4
+        });
+    }
+    function loop() {
+        if (!running) return;
         cx.clearRect(0, 0, W, H);
         for (const p of ps) {
             p.sway += 0.01; p.x += Math.sin(p.sway) * 0.4 + p.vx; p.y += p.vy;
             const dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy);
-            if (d < 120) { p.vx += (dx / d) * 0.15; }   // menjauh dari kursor
+            if (d < 120) { p.vx += (dx / d) * 0.15; }
             p.vx *= 0.95;
             if (p.y < -20) { p.y = H + 20; p.x = Math.random() * W; }
             if (p.x < -20) p.x = W + 20; if (p.x > W + 20) p.x = -20;
@@ -726,9 +828,26 @@ document.addEventListener('keydown', (e) => {
             g.addColorStop(0, `rgba(${p.c},${p.a})`); g.addColorStop(1, `rgba(${p.c},0)`);
             cx.fillStyle = g; cx.beginPath(); cx.arc(p.x, p.y, p.r * 2.5, 0, 6.283); cx.fill();
         }
-        requestAnimationFrame(loop);
-    })();
+        raf = requestAnimationFrame(loop);
+    }
+    return {
+        start() { if (running) return; running = true; resize(); if (!ps.length) init(); raf = requestAnimationFrame(loop); },
+        stop() { running = false; cancelAnimationFrame(raf); cx.clearRect(0, 0, W, H); }
+    };
 })();
+
+/* ---------- Tombol Effect ON / OFF ---------- */
+function setFx(on, save = true) {
+    root.classList.toggle('no-fx', !on);
+    document.querySelectorAll('#fxToggle button').forEach(b => {
+        const active = (b.dataset.fx === 'on') === on;
+        b.classList.toggle('active', active); b.setAttribute('aria-pressed', active);
+    });
+    if (save) { try { localStorage.setItem('fx', on ? 'on' : 'off'); } catch (e) {} }
+    on ? Particles.start() : Particles.stop();
+}
+document.querySelectorAll('#fxToggle button').forEach(b => b.addEventListener('click', () => setFx(b.dataset.fx === 'on')));
+setFx(!noFx(), false);
 </script>
 </body>
 </html>
